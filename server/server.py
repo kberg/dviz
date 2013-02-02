@@ -20,7 +20,8 @@ if __name__ == '__main__':
   urls = [
       '', 'View',
       '/', 'View',
-      '/graph/(.+)', 'Graph',
+      '/graph', 'Graph',
+      '/data/(.+)', 'Data',
       ]
   application = web.application(urls, globals())
   application.run()
