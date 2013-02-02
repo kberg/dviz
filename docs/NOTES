@@ -1,0 +1,9 @@
+storage system per user/series (fake user specification / auth for now)
+get/post args: key/user/series/x/y
+read all series for a user
+Make a graph from a set of series and graph options.
+
+Storage system:
+user/series.tsv
+format: x\ty
+Unsorted, sort with $ sort -t$'\t' -n file.txt
