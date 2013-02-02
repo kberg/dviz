@@ -19,7 +19,18 @@ class Datastore:
   def getmany(self, names):
     """return merged data from datastore for multiple names.
     Returns:
-      list of (int timestamp, data name, int value) tuples.
+      list of (int timestamp, int value, int value...) tuples
+      if a data point is missing then use None.
     """
-    # TODO(rob): write me.
+    raw_data = [self.get(name) for name in names]
+    num_names = len(names)
+    processed = dict()
+    for index, singlename in enumerate(raw_data):
+      for timestamp, value in singlename:
+        if not timestamp in processed:
+          processed[timestamp] = [''] * num_names
+        processed[timestamp][index] = value
+    for timestamp, data in processed.iteritems():
+      processed[timestamp] = '\t'.join(data)
+    return list(processed.iteritems())
 
