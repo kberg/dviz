@@ -1,1 +1,1 @@
-../../lib/dygraphs/dygraph-combined.js
+../lib/dygraphs/dygraph-combined.js
