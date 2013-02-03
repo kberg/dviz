@@ -31,6 +31,6 @@ class Datastore:
           processed[timestamp] = [''] * num_names
         processed[timestamp][index] = value
     for timestamp, data in processed.iteritems():
-      processed[timestamp] = '\t'.join(data)
+      processed[timestamp] = ','.join(data)
     return list(processed.iteritems())
 

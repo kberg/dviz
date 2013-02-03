@@ -9,12 +9,12 @@ class Data:
       return ''
     if len(names) == 1:
       data = d.get(names[0])
-      data = ['\t'.join([str(dd) for dd in d]) for d in data]
+      data = [','.join([str(dd) for dd in d]) for d in data]
       return '\n'.join(data)
 
 
 
     data = d.getmany(names)
-    data = ['\t'.join([str(dd) for dd in d]) for d in data]
+    data = [','.join([str(dd) for dd in d]) for d in data]
     return '\n'.join(data)
 
