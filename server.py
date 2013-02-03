@@ -1,5 +1,6 @@
 import web
 from graphme import Graph
+from server_data import Data
 
 web.internalerror = web.debugerror
 
