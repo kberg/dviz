@@ -9,7 +9,7 @@ $def with (name, series)
     <div id='graph'></div>
     <script type='text/javascript'>
       var g = new Dygraph('graph',
-          '/data?series=$series',
+          '/data/$series',
           {
             delimiter : '\t'
           });
