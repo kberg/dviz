@@ -1,18 +1,16 @@
-$def with (name, series)
+$def with (series)
 <!DOCTYPE html>
 <html>
   <head>
-    <script type='text/javascript' src='static/dygraph-combined.js'></script>
+    <script type='text/javascript' src='/static/dygraph-combined.js'></script>
   </head>
   <body>
-    <h2>Graph for $name</h2>
+    <h2>Graph for $series</h2>
     <div id='graph'></div>
     <script type='text/javascript'>
       var g = new Dygraph('graph',
           '/data/$series',
-          {
-            delimiter : '\t'
-          });
+          { });
     </script>
   </body>
 </html>
