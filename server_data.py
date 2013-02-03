@@ -4,7 +4,7 @@ import datastore
 class Data:
   def GET(self, names):
     d = datastore.Datastore()
-    header = 'date,%s\n' % names
+    header = 'Date,%s\n' % names
 
     names = names.split(',')
     if len(names) == 0:

@@ -1,6 +1,13 @@
+import datetime
+
 class Datastore:
   def _topath(self, name):
     return 'teststore/%s.tsv' % name
+
+  def _format_datestr(self, datestr):
+    dt = datetime.datetime.strptime(datestr, '%Y%m%d%H%M')
+    return dt.strftime('%Y/%m/%d %H:%M:%S')
+
 
   def add(self, name, timestamp, value):
     f = open(self._topath(name), 'a')
@@ -13,7 +20,7 @@ class Datastore:
        list of (int timestmap, int value) tuples.
     """
     data = [line.split() for line in open(self._topath(name))]
-    data = [(int(x), y) for (x, y) in data]
+    data = [(self._format_datestr(x), y) for (x, y) in data]
     return sorted(data)
 
   def getmany(self, names):
@@ -30,7 +37,7 @@ class Datastore:
         if not timestamp in processed:
           processed[timestamp] = [''] * num_names
         processed[timestamp][index] = value
-    for timestamp, data in processed.iteritems():
+    for timestamp, data in sorted(processed.iteritems()):
       processed[timestamp] = ','.join(data)
     return list(processed.iteritems())
 
