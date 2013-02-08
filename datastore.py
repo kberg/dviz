@@ -1,8 +1,17 @@
 import datetime
+import glob
 
 class Datastore:
   def _topath(self, name):
     return 'teststore/%s.tsv' % name
+
+  def list(self):
+    """return the list of all stored data sources
+    Returns:
+       list of [string] tuples.
+    """
+    def trim(x) : return x[:-4][len("teststore/"):]
+    return map(trim, glob.glob('teststore/*.tsv'))
 
   def _format_datestr(self, datestr):
     # This try/except catches historic data which didn't have H:M at the end
