@@ -5,9 +5,14 @@ class Datastore:
     return 'teststore/%s.tsv' % name
 
   def _format_datestr(self, datestr):
-    dt = datetime.datetime.strptime(datestr, '%Y%m%d%H%M')
-    return dt.strftime('%Y/%m/%d %H:%M:%S')
+    # This try/except catches historic data which didn't have H:M at the end
+    # and can be removed when the testdata is scrubbed.
+    try:
+      dt = datetime.datetime.strptime(datestr, '%Y%m%d%H%M')
+    except ValueError:
+      dt = datetime.datetime.strptime(datestr, '%Y%m%d')
 
+    return dt.strftime('%Y/%m/%d %H:%M:%S')
 
   def add(self, name, timestamp, value):
     f = open(self._topath(name), 'a')
