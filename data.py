@@ -12,6 +12,12 @@ class SeriesData(db.Model):
   value = db.FloatProperty()
 
 
+class User(db.Model):
+  uid = db.StringProperty()      # username
+  secret = db.StringProperty()   # secret key for POSTing.
+  # TODO: need to do stuff with this class.
+
+
 def get_series_by_name(name):
   try:
     return Series.gql('WHERE name =:1', name)[0]

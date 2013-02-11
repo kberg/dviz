@@ -1,6 +1,7 @@
 import datetime
 import random
 import os
+import sys
 
 
 import webapp2
@@ -40,6 +41,7 @@ class Graph(webapp2.RequestHandler):
 
 class Data(webapp2.RequestHandler):
   def get(self, names):
+    sys.stderr.write('get.\n')
     names = names.split(',')
     text = ''
     if len(names) == 0:
@@ -58,7 +60,19 @@ class Data(webapp2.RequestHandler):
       # Should look like (date,data1,data2)
   
   def post(self):
-    # TODO: write me.
+    # TODO: need to authenticate w/ User secret.
+    name = self.request.get('name')
+    secret = self.request.get('secret')
+    series = self.request.get('series')
+    value = float(self.request.get('value'))
+    timestamp = self.request.get('timestamp')
+    if not timestamp or timestamp == 'None':
+      timestamp = datetime.datetime.now()
+    else:
+      timestamp = datetime.strptime('%Y/%m/%d %H:%M:%S')
+    data.add(series, value, timestamp)
+    self.response.out.write('Added: %s, %s, %s\n' % (
+      series, value, timestamp))
 
 
 class Series(webapp2.RequestHandler):
@@ -84,6 +98,7 @@ class AddRandom(webapp2.RequestHandler):
 
 app = webapp2.WSGIApplication([
   ('/', MainPage),
+  ('/data', Data),
   ('/data/(.+)', Data),
   ('/series', Series),
   ('/random', AddRandom),  # for testing only.
