@@ -39,6 +39,7 @@ def get_or_add_series(name):
 def get_all_series():
   return Series.all().run()
 
+
 def add(name, value, timestamp=None):
   series = get_or_add_series(name)
   d = SeriesData(series=series, value=value)

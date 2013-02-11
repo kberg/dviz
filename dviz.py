@@ -44,7 +44,7 @@ class Data(webapp2.RequestHandler):
     text = ''
     if len(names) == 0:
       text = ''
-    if len(names) == 1:
+    elif len(names) == 1:
       self.response.out.write('Date,%s\n' % names[0])
       points = list(data.get_series_data(names[0]))
       for i in range(len(points)):
@@ -52,6 +52,13 @@ class Data(webapp2.RequestHandler):
         self.response.out.write('%s,%f\n' % (
             point.timestamp.strftime('%Y/%m/%d %H:%M:%S'),
             point.value))
+    else:
+      self.response.out.write('Date,%s\n' % names)
+      # TODO: support multi-series data.
+      # Should look like (date,data1,data2)
+  
+  def post(self):
+    # TODO: write me.
 
 
 class Series(webapp2.RequestHandler):
