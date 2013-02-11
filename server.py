@@ -1,6 +1,7 @@
 import web
 from graphme import Graph
 from server_data import Data
+from list import List
 
 web.internalerror = web.debugerror
 
@@ -21,6 +22,7 @@ if __name__ == '__main__':
   urls = [
       '', 'View',
       '/', 'View',
+      '/list', 'List',
       '/graph/(.+)', 'Graph',
       '/data/(.+)', 'Data',
       ]
