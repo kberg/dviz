@@ -1,6 +1,7 @@
 import datetime
 import random
 import os
+import sys
 
 
 import webapp2
@@ -40,11 +41,12 @@ class Graph(webapp2.RequestHandler):
 
 class Data(webapp2.RequestHandler):
   def get(self, names):
+    sys.stderr.write('get.\n')
     names = names.split(',')
     text = ''
     if len(names) == 0:
       text = ''
-    if len(names) == 1:
+    elif len(names) == 1:
       self.response.out.write('Date,%s\n' % names[0])
       points = list(data.get_series_data(names[0]))
       for i in range(len(points)):
@@ -52,6 +54,25 @@ class Data(webapp2.RequestHandler):
         self.response.out.write('%s,%f\n' % (
             point.timestamp.strftime('%Y/%m/%d %H:%M:%S'),
             point.value))
+    else:
+      self.response.out.write('Date,%s\n' % names)
+      # TODO: support multi-series data.
+      # Should look like (date,data1,data2)
+  
+  def post(self):
+    # TODO: need to authenticate w/ User secret.
+    name = self.request.get('name')
+    secret = self.request.get('secret')
+    series = self.request.get('series')
+    value = float(self.request.get('value'))
+    timestamp = self.request.get('timestamp')
+    if not timestamp or timestamp == 'None':
+      timestamp = datetime.datetime.now()
+    else:
+      timestamp = datetime.strptime('%Y/%m/%d %H:%M:%S')
+    data.add(series, value, timestamp)
+    self.response.out.write('Added: %s, %s, %s\n' % (
+      series, value, timestamp))
 
 
 class Series(webapp2.RequestHandler):
@@ -77,6 +98,7 @@ class AddRandom(webapp2.RequestHandler):
 
 app = webapp2.WSGIApplication([
   ('/', MainPage),
+  ('/data', Data),
   ('/data/(.+)', Data),
   ('/series', Series),
   ('/random', AddRandom),  # for testing only.
