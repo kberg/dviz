@@ -49,16 +49,35 @@ class Data(webapp2.RequestHandler):
     elif len(names) == 1:
       self.response.out.write('Date,%s\n' % names[0])
       points = list(data.get_series_data(names[0]))
-      for i in range(len(points)):
-        point = points[i]
+      for point in points:
         self.response.out.write('%s,%f\n' % (
             point.timestamp.strftime('%Y/%m/%d %H:%M:%S'),
             point.value))
     else:
-      self.response.out.write('Date,%s\n' % names)
-      # TODO: support multi-series data.
-      # Should look like (date,data1,data2)
-  
+      self.response.out.write('Date,%s\n' % ','.join(names))
+      points = list(data.get_multiple_series_data(names))
+
+      cur_points = {}
+      last_timestamp = None
+      for i in range(len(points)):
+        point = points[i]
+        if last_timestamp and last_timestamp != point.timestamp:
+          values = ['%s' % cur_points.get(n, 'None') for n in names]
+          self.response.out.write('%s,%s\n' % (
+            last_timestamp.strftime('%Y/%m/%d %H:%M:%S'),
+            ','.join(values)))
+          cur_points = {point.series.name : point.value}
+          last_timestamp = point.timestamp
+        else:
+          if not last_timestamp:
+            last_timestamp = point.timestamp
+          cur_points[point.series.name] = point.value
+      if last_timestamp:
+        values = ['%s' % cur_points.get(n, 'None') for n in names]
+        self.response.out.write('%s,%s\n' % (
+          last_timestamp.strftime('%Y/%m/%d %H:%M:%S'),
+          ','.join(values)))
+
   def post(self):
     # TODO: need to authenticate w/ User secret.
     name = self.request.get('name')

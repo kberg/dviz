@@ -1,5 +1,6 @@
 import datetime
 from google.appengine.ext import db
+from google.appengine.ext import ndb
 
 class Series(db.Model):
   name = db.StringProperty()
@@ -30,7 +31,16 @@ def get_series_data(name):
   series = get_series_by_name(name)
   if not series:
     return []
-  return SeriesData.all().filter('series =', series).run()
+  return SeriesData.all().filter('series =', series).order('timestamp').run()
+
+def get_multiple_series_data(names):
+  """Get all data from multiple serieses."""
+  serieses = [get_series_by_name(n) for n in names]
+  serieses = [s for s in serieses if s]
+  if not serieses:
+    return []
+  return SeriesData.all().filter('series IN ', serieses).order('timestamp')
+
 
 
 def get_or_add_series(name):
