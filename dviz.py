@@ -1,6 +1,12 @@
+import datetime
+import random
 import os
+import sys
+
 
 import webapp2
+
+import data
 #import template
 
 #TEMPLATE_DIR = os.path.join(os.path.dirname(__file__), 'templates')
@@ -35,52 +41,85 @@ class Graph(webapp2.RequestHandler):
 
 class Data(webapp2.RequestHandler):
   def get(self, names):
-    data = """Date,taipei_temp,94303_temp
-2013/02/02 11:05:00,71.6,51.8
-2013/02/02 14:30:00,71.6,55.4
-2013/02/02 07:45:00,71.6,50.0
-2013/02/02 12:55:00,71.6,53.6
-2013/02/02 11:00:00,71.6,51.8
-2013/02/02 07:20:00,69.8,50.0
-2013/02/02 09:55:00,71.6,51.8
-2013/02/02 07:15:00,69.8,50.0
-2013/02/02 13:10:00,71.6,53.6
-2013/02/02 11:25:00,71.6,51.8
-2013/02/02 07:10:00,69.8,50.0
-2013/02/02 14:05:00,71.6,53.6
-2013/02/02 14:25:00,71.6,55.4
-2013/02/02 13:00:00,71.6,53.6
-2013/02/02 12:25:00,71.6,53.6
-2013/02/02 08:30:00,71.6,50.0
-2013/02/02 12:40:00,71.6,53.6
-2013/02/02 11:15:00,71.6,51.8
-2013/02/02 09:31:00,69.8,51.8
-2013/02/02 15:15:00,69.8,55.4
-2013/02/02 09:40:00,71.6,51.8
-2013/02/02 15:20:00,69.8,55.4
-2013/02/02 07:00:00,69.8,50.0
-2013/02/02 14:15:00,71.6,55.4
-2013/02/02 10:20:00,71.6,51.8
-2013/02/02 14:55:00,69.8,55.4
-2013/02/02 10:25:00,71.6,51.8
-2013/02/02 07:25:00,69.8,50.0
-2013/02/02 15:00:00,69.8,55.4
-2013/02/02 10:05:00,71.6,51.8
-    """
-    #self.response.out.write('Data for %s.' % names)
-    self.response.out.write(data)
+    sys.stderr.write('get.\n')
+    names = names.split(',')
+    text = ''
+    if len(names) == 0:
+      text = ''
+    elif len(names) == 1:
+      self.response.out.write('Date,%s\n' % names[0])
+      points = list(data.get_series_data(names[0]))
+      for point in points:
+        self.response.out.write('%s,%f\n' % (
+            point.timestamp.strftime('%Y/%m/%d %H:%M:%S'),
+            point.value))
+    else:
+      self.response.out.write('Date,%s\n' % ','.join(names))
+      points = list(data.get_multiple_series_data(names))
+
+      cur_points = {}
+      last_timestamp = None
+      for i in range(len(points)):
+        point = points[i]
+        if last_timestamp and last_timestamp != point.timestamp:
+          values = ['%s' % cur_points.get(n, 'None') for n in names]
+          self.response.out.write('%s,%s\n' % (
+            last_timestamp.strftime('%Y/%m/%d %H:%M:%S'),
+            ','.join(values)))
+          cur_points = {point.series.name : point.value}
+          last_timestamp = point.timestamp
+        else:
+          if not last_timestamp:
+            last_timestamp = point.timestamp
+          cur_points[point.series.name] = point.value
+      if last_timestamp:
+        values = ['%s' % cur_points.get(n, 'None') for n in names]
+        self.response.out.write('%s,%s\n' % (
+          last_timestamp.strftime('%Y/%m/%d %H:%M:%S'),
+          ','.join(values)))
+
+  def post(self):
+    # TODO: need to authenticate w/ User secret.
+    name = self.request.get('name')
+    secret = self.request.get('secret')
+    series = self.request.get('series')
+    value = float(self.request.get('value'))
+    timestamp = self.request.get('timestamp')
+    if not timestamp or timestamp == 'None':
+      timestamp = datetime.datetime.now()
+    else:
+      timestamp = datetime.strptime('%Y/%m/%d %H:%M:%S')
+    data.add(series, value, timestamp)
+    self.response.out.write('Added: %s, %s, %s\n' % (
+      series, value, timestamp))
+
+
+class Series(webapp2.RequestHandler):
+  def get(self):
+    html = ['<html><title>all series</title><body>\n<ul>']
+    for series in data.get_all_series():
+      html.append('<li>%s</li>' % series.name)
+    html.append('</ul></body></html>')
+    self.response.out.write('\n'.join(html))
+
+
+class AddRandom(webapp2.RequestHandler):
+  def get(self):
+    self.response.out.write('adding random data.')
+    for i in range(100):
+      month = random.randint(1, 12)
+      day = random.randint(1, 27)
+      timestamp = datetime.datetime(year=2012, month=month, day=day)
+      data.add('first', float(random.randint(0, 100)), timestamp)
+      data.add('second', float(random.randint(0, 100)), timestamp)
+
 
 
 app = webapp2.WSGIApplication([
   ('/', MainPage),
+  ('/data', Data),
   ('/data/(.+)', Data),
+  ('/series', Series),
+  ('/random', AddRandom),  # for testing only.
   ('/graph/(.+)', Graph),
   ])
-
-"""
-def main():
-  run_wsgi_app(application)
-
-if __name__ == '__main__':
-  main()
-"""
