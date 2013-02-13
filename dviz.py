@@ -17,26 +17,12 @@ class MainPage(webapp2.RequestHandler):
 
 class Graph(webapp2.RequestHandler):
   def get(self, names):
-    text = """
-    <!DOCTYPE html>
-    <html>
-      <head>
-        <script type='text/javascript'
-        src='/static/dygraph-combined.js'></script>
-      </head>
-      <body>
-        <h2>Graph for %s</h2>
-        <div id='graph'></div>
-        <script type='text/javascript'>
-          var g = new Dygraph('graph',
-              '/data/%s',
-              { });
-        </script>
-      </body>
-    </html>
-    """ % (names, names)
-    self.response.out.write(text)
+    template_values = {
+      'series': names
+    }
 
+    path = os.path.join(os.path.dirname(__file__), 'templates/graph.html')
+    self.response.out.write(template.render(path, template_values))
 
 class Data(webapp2.RequestHandler):
   def get(self, names):
