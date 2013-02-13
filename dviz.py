@@ -7,9 +7,8 @@ import sys
 import webapp2
 
 import data
-#import template
 
-#TEMPLATE_DIR = os.path.join(os.path.dirname(__file__), 'templates')
+from google.appengine.ext.webapp import template
 
 class MainPage(webapp2.RequestHandler):
   def get(self):
@@ -96,11 +95,12 @@ class Data(webapp2.RequestHandler):
 
 class Series(webapp2.RequestHandler):
   def get(self):
-    html = ['<html><title>all series</title><body>\n<ul>']
-    for series in data.get_all_series():
-      html.append('<li>%s</li>' % series.name)
-    html.append('</ul></body></html>')
-    self.response.out.write('\n'.join(html))
+    template_values = {
+      'entries': data.get_all_series(),
+    }
+
+    path = os.path.join(os.path.dirname(__file__), 'templates/list.html')
+    self.response.out.write(template.render(path, template_values))
 
 
 class AddRandom(webapp2.RequestHandler):
