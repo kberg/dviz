@@ -10,7 +10,11 @@
       <tr>
         <td><input type="checkbox" name="{{ entry.name }}" value="{{ entry.name }}"></td>
         <td>{{ entry.name }}</td>
-        <td><a href="/data/{{ entry.name }}">data</a> <a href="/graph/{{ entry.name }}">graph</a></td>
+        <td>
+          <a href="/data/{{ entry.name }}">data</a>
+          <a href="/graph/{{ entry.name }}">graph</a>
+          <a href="/s/{{ entry.name }}">about series</a>
+        </td>
       </tr>
     {% endfor %}
     </tdata>

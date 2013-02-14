@@ -63,6 +63,10 @@ class Data(webapp2.RequestHandler):
           last_timestamp.strftime('%Y/%m/%d %H:%M:%S'),
           ','.join(values)))
 
+class Push(webapp2.RequestHandler):
+  def get(self):
+    self.post()
+
   def post(self):
     # TODO: need to authenticate w/ User secret.
     name = self.request.get('name')
@@ -70,16 +74,19 @@ class Data(webapp2.RequestHandler):
     series = self.request.get('series')
     value = float(self.request.get('value'))
     timestamp = self.request.get('timestamp')
-    if not timestamp or timestamp == 'None':
-      timestamp = datetime.datetime.now()
+    timems = self.request.get('timems')
+    if not timestamp or timestamp == 'None' or timestamp == '':
+      if timems and timems != '':
+        timestamp = int(timems)
+      else:
+        timestamp = datetime.datetime.now()
     else:
       timestamp = datetime.strptime('%Y/%m/%d %H:%M:%S')
     data.add(series, value, timestamp)
     self.response.out.write('Added: %s, %s, %s\n' % (
       series, value, timestamp))
 
-
-class Series(webapp2.RequestHandler):
+class List(webapp2.RequestHandler):
   def get(self):
     template_values = {
       'entries': data.get_all_series(),
@@ -99,14 +106,21 @@ class AddRandom(webapp2.RequestHandler):
       data.add('first', float(random.randint(0, 100)), timestamp)
       data.add('second', float(random.randint(0, 100)), timestamp)
 
-
+class Series(webapp2.RequestHandler):
+  def get(self, name):
+    template_values = {
+      'name' : name
+    }
+    path = os.path.join(os.path.dirname(__file__), 'templates/series.html')
+    self.response.out.write(template.render(path, template_values))
 
 app = webapp2.WSGIApplication([
   ('/', MainPage),
   ('/data', Data),
   ('/data/(.+)', Data),
-  ('/series', Series),
+  ('/list', List),
   ('/push', Push),
   ('/random', AddRandom),  # for testing only.
   ('/graph/(.+)', Graph),
+  ('/s/(.+)', Series)
   ])
