@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  </head>
+  <body>
+    <h2>About series {{ name }}</h2>
+    <h3>Add a point</h3>
+    <table>
+      <tr><td>Time (ms)</td><td><input type='text' id='time'/> (<span id='timestr'></span>)</td></tr>
+      <tr><td>Value</td><td><input type='text' id='value'/></td></tr>
+      <tr><td>&nbsp;</td><td><button id='commit'/>Save</button></td></tr>
+    </table>
+
+    <script type="text/javascript">
+      t = document.getElementById('time');
+      timestr = document.getElementById('timestr');
+      v = document.getElementById('value');
+      s = document.getElementById('commit');
+
+      // Arghgrh why is this one char behind?
+      var f = function() {
+        timestr.innerText = new Date(parseInt(t.value));
+      }
+      t.onkeydown = f;
+      t.onkeypress = f;
+      t.onchange = f;
+
+      t.value = new Date().getTime();
+      f();
+
+      s.onclick = function() {
+        url="/push?series={{ name }}&timems=" + t.value + "&value=" + v.value;
+        if (console) { console.log("pushing " , url); }
+        window.location.href=url;
+      }
+    </script>
+  </body>
+</html>
