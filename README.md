@@ -11,5 +11,4 @@ todo
    * sparklines
  * prettify graph
    * different time ranges (1 day, 1 week, 1 month, 1 year, all time)
- * render multiple timeserieses
  * authentication
