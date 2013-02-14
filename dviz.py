@@ -80,7 +80,8 @@ class Push(webapp2.RequestHandler):
     timems = self.request.get('timems')
     if not timestamp or timestamp == 'None' or timestamp == '':
       if timems and timems != '':
-        timestamp = int(timems)
+        timeSeconds = float(timems) / 1000
+        timestamp = datetime.datetime.utcfromtimestamp(timeSeconds)
       else:
         timestamp = datetime.datetime.now()
     else:
