@@ -42,7 +42,6 @@ def get_multiple_series_data(names):
   return SeriesData.all().filter('series IN ', serieses).order('timestamp')
 
 
-
 def get_or_add_series(name):
   """Gets a series, or adds it if it doesn't exist."""
   series = get_series_by_name(name)

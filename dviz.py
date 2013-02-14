@@ -1,3 +1,6 @@
+# NOTE: NO SECURITY. You can add crap like a series name "<script>alert("!")</script>" and have bad things happen.
+#
+
 import datetime
 import random
 import os
@@ -81,6 +84,7 @@ class Push(webapp2.RequestHandler):
       else:
         timestamp = datetime.datetime.now()
     else:
+      # kberg asks: IS THIS RIGHT?
       timestamp = datetime.strptime('%Y/%m/%d %H:%M:%S')
     data.add(series, value, timestamp)
     self.response.out.write('Added: %s, %s, %s\n' % (
@@ -96,15 +100,24 @@ class List(webapp2.RequestHandler):
     self.response.out.write(template.render(path, template_values))
 
 
+ 
 class AddRandom(webapp2.RequestHandler):
   def get(self):
-    self.response.out.write('adding random data.')
-    for i in range(100):
-      month = random.randint(1, 12)
-      day = random.randint(1, 27)
-      timestamp = datetime.datetime(year=2012, month=month, day=day)
-      data.add('first', float(random.randint(0, 100)), timestamp)
-      data.add('second', float(random.randint(0, 100)), timestamp)
+   self.response.out.write('adding random data.')
+   for i in range(100):
+     month = random.randint(1, 12)
+     day = random.randint(1, 27)
+     timestamp = datetime.datetime(year=2012, month=month, day=day)
+     data.add('first', float(random.randint(0, 100)), timestamp)
+     data.add('second', float(random.randint(0, 100)), timestamp)
+
+class NewSeries(webapp2.RequestHandler):
+  def get(self):
+    name = self.request.get('name')
+    # TODO(konigsberg): Validate/sanitize name
+    data.get_or_add_series(name)
+    # TODO: redirect to /s/name
+    self.response.out.write("<a href='/s/%s'>Created, go to it</a>" % name)
 
 class Series(webapp2.RequestHandler):
   def get(self, name):
@@ -120,6 +133,7 @@ app = webapp2.WSGIApplication([
   ('/data/(.+)', Data),
   ('/list', List),
   ('/push', Push),
+  ('/newseries', NewSeries),
   ('/random', AddRandom),  # for testing only.
   ('/graph/(.+)', Graph),
   ('/s/(.+)', Series)
