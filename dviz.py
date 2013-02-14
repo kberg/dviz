@@ -106,6 +106,7 @@ app = webapp2.WSGIApplication([
   ('/data', Data),
   ('/data/(.+)', Data),
   ('/series', Series),
+  ('/push', Push),
   ('/random', AddRandom),  # for testing only.
   ('/graph/(.+)', Graph),
   ])
