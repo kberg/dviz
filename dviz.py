@@ -4,9 +4,6 @@
 import datetime
 import random
 import os
-import sys
-
-
 import webapp2
 
 import data
@@ -23,27 +20,52 @@ class Graph(webapp2.RequestHandler):
     template_values = {
       'series': names
     }
+    # only get first. will need to get them all, later.
+    latest = data.get_latest_value(names.split(',')[0])
+    if latest:
+      template_values['latest_val'] = latest.value
+      template_values['latest_ts'] = latest.timestamp
+    else:
+      template_values['latest_val'] = 'NaN'
+      template_values['latest_ts'] = 'NaN'
+
 
     path = os.path.join(os.path.dirname(__file__), 'templates/graph.html')
     self.response.out.write(template.render(path, template_values))
 
+
+def get_time_ago(timerange):
+  if timerange == 'hour':
+    hours_ago = 1
+  if timerange == 'day':
+    hours_ago = 24
+  if timerange == 'week':
+    hours_ago = 24*7
+  if timerange == 'month':
+    hours_ago = 24*30
+  if timerange == 'year':
+    hours_ago = 24*365
+  return datetime.datetime.now() - datetime.timedelta(hours=hours_ago)
+
+
 class Data(webapp2.RequestHandler):
-  def get(self, names):
-    sys.stderr.write('get.\n')
+  def get(self, timerange, names):
+    # Convert timerange an exact date.
+    since = get_time_ago(timerange)
     names = names.split(',')
     text = ''
     if len(names) == 0:
       text = ''
     elif len(names) == 1:
       self.response.out.write('Date,%s\n' % names[0])
-      points = list(data.get_series_data(names[0]))
+      points = list(data.get_series_data(names[0], since))
       for point in points:
         self.response.out.write('%s,%f\n' % (
             point.timestamp.strftime('%Y/%m/%d %H:%M:%S'),
             point.value))
     else:
       self.response.out.write('Date,%s\n' % ','.join(names))
-      points = list(data.get_multiple_series_data(names))
+      points = list(data.get_multiple_series_data(names, since))
 
       cur_points = {}
       last_timestamp = None
@@ -105,12 +127,25 @@ class List(webapp2.RequestHandler):
 class AddRandom(webapp2.RequestHandler):
   def get(self):
    self.response.out.write('adding random data.')
-   for i in range(100):
-     month = random.randint(1, 12)
-     day = random.randint(1, 27)
-     timestamp = datetime.datetime(year=2012, month=month, day=day)
-     data.add('first', float(random.randint(0, 100)), timestamp)
-     data.add('second', float(random.randint(0, 100)), timestamp)
+   now = datetime.datetime.now()
+   for i in range(20):
+
+     # add a few in last hour, day, week, month, year.
+     hour_secs = 60*60
+     day_secs = 24*hour_secs
+     week_secs = 7*day_secs
+     month_secs = 30*day_secs
+     year_secs = 365*day_secs
+
+     for ago in (hour_secs, day_secs, week_secs, month_secs, year_secs):
+       data.add('first',
+           float(random.randint(0, 100)),
+           now - datetime.timedelta(seconds=ago))
+       data.add('second',
+           float(random.randint(0, 100)),
+           now - datetime.timedelta(seconds=ago))
+
+
 
 class NewSeries(webapp2.RequestHandler):
   def get(self):
@@ -131,7 +166,7 @@ class Series(webapp2.RequestHandler):
 app = webapp2.WSGIApplication([
   ('/', MainPage),
   ('/data', Data),
-  ('/data/(.+)', Data),
+  ('/data/(.+)/(.+)', Data),
   ('/list', List),
   ('/push', Push),
   ('/newseries', NewSeries),

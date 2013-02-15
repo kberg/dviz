@@ -4,12 +4,79 @@
     <script type='text/javascript' src='/static/dygraph-combined.js'></script>
   </head>
   <body>
-    <h2>Graph for {{ series }}</h2>
-    <div id='graph'></div>
-    <script type='text/javascript'>
-      var g = new Dygraph('graph',
-          '/data/{{ series }}',
-          { });
-    </script>
+    <table>
+      <tr>
+        <td><h2>{{series}}</h2></td>
+        <td>Last value:<h2>{{ latest_val }} </h2> {{ latest_ts}}.
+        </td>
+      </tr>
+      
+      <tr>
+        <td>
+          <a href="/detail/hour/{{ series }}">
+           <div id="hourgraph" style="width:300px; height:200px;"></div>
+           <script type="text/javascript">
+            dg_hour = new Dygraph(
+            document.getElementById("hourgraph"),
+            '/data/hour/{{ series }}',
+             { });
+            </script>
+            <center>hour</center>
+          </a>
+        </td>
+        <td>
+          <a href="/detail/day/{{ series }}">
+           <div id="daygraph" style="width:300px; height:200px;"></div>
+           <script type="text/javascript">
+            dg_day = new Dygraph(
+            document.getElementById("daygraph"),
+            '/data/day/{{ series }}',
+             { });
+            </script>
+            <center>day</center>
+          </a>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <a href="/detail/week/{{ series }}">
+           <div id="weekgraph" style="width:300px; height:200px;"></div>
+           <script type="text/javascript">
+            dg_week = new Dygraph(
+            document.getElementById("weekgraph"),
+            '/data/week/{{ series }}',
+             { });
+            </script>
+            <center>week</center>
+          </a>
+        </td>
+        <td>
+          <a href="/detail/month/{{ series }}">
+           <div id="monthgraph" style="width:300px; height:200px;"></div>
+           <script type="text/javascript">
+            dg_month = new Dygraph(
+            document.getElementById("monthgraph"),
+            '/data/month/{{ series }}',
+             { });
+            </script>
+            <center>month</center>
+          </a>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2">
+          <a href="/detail/year/{{ series }}">
+           <div id="yeargraph" style="width:600px; height:200px;"></div>
+           <script type="text/javascript">
+            dg_year = new Dygraph(
+            document.getElementById("yeargraph"),
+            '/data/year/{{ series }}',
+             { });
+            </script>
+            <center>year</center>
+          </a>
+        </td>
+      </tr>
+    </table>
   </body>
 </html>

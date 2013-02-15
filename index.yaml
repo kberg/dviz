@@ -14,3 +14,9 @@ indexes:
   properties:
   - name: series
   - name: timestamp
+
+- kind: SeriesData
+  properties:
+  - name: series
+  - name: timestamp
+    direction: desc

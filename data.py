@@ -1,4 +1,6 @@
 import datetime
+import sys
+
 from google.appengine.ext import db
 from google.appengine.ext import ndb
 
@@ -26,20 +28,34 @@ def get_series_by_name(name):
     return None
 
 
-def get_series_data(name):
+def get_series_data(name, since):
   """Get all data from a series."""
   series = get_series_by_name(name)
   if not series:
     return []
-  return SeriesData.all().filter('series =', series).order('timestamp').run()
+  return SeriesData.all().filter(
+    'series =', series).filter(
+    'timestamp > ', since).order('-timestamp').run()
 
-def get_multiple_series_data(names):
+def get_latest_value(name):
+  series = get_series_by_name(name)
+  if not series:
+    return None
+  try:
+    return list(SeriesData.all().filter('series =', series).order('-timestamp').fetch(1))[0]
+  except Exception, e:
+    return None
+
+
+def get_multiple_series_data(names, since):
   """Get all data from multiple serieses."""
   serieses = [get_series_by_name(n) for n in names]
   serieses = [s for s in serieses if s]
   if not serieses:
     return []
-  return SeriesData.all().filter('series IN ', serieses).order('timestamp')
+  return SeriesData.all().filter(
+      'series IN ', serieses).filter(
+      'timestamp > ', since).order('-timestamp')
 
 
 def get_or_add_series(name):
