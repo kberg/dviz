@@ -6,7 +6,6 @@ import random
 import os
 import sys
 
-
 import webapp2
 
 import data
@@ -15,8 +14,7 @@ from google.appengine.ext.webapp import template
 
 class MainPage(webapp2.RequestHandler):
   def get(self):
-    self.response.out.write('Hello world.')
-
+    self.redirect("/list")
 
 class Graph(webapp2.RequestHandler):
   def get(self, names):
