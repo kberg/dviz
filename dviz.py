@@ -14,7 +14,7 @@ from google.appengine.api import users
 
 class MainPage(webapp2.RequestHandler):
   def get(self):
-    self.response.out.write('Hello world.')
+    self.redirect("/list")
 
 class User(webapp2.RequestHandler):
   def get(self):
