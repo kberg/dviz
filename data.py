@@ -4,6 +4,15 @@ import sys
 from google.appengine.ext import db
 from google.appengine.ext import ndb
 
+class UserException(Exception):
+  pass
+
+class NoSuchSeriesException(Exception):
+  pass
+
+class PermissionException(Exception):
+  pass
+
 
 class User(db.Model):
   uid = db.StringProperty()      # username
@@ -31,31 +40,38 @@ def get_user(user_id='', secret=''):
     return get_user_by_secret(secret)
   if user_id:
     return get_user_by_id(user_id)
-  return
+  raise UserException('No such user')
 
 
 def get_user_by_id(user_id):
   try:
     return User.gql('WHERE uid =:1', user_id)[0]
   except IndexError:
-    return None
+    raise UserException('No such user')
 
 
 def get_user_by_secret(secret):
   try:
     return User.gql('WHERE secret =:1', secret)[0]
   except IndexError:
-    return None
+    raise UserException('No such user')
 
 
 def add_user(user_id, secret):
-  # TODO: should raise exceptions here probably.
-  # Don't create a dupe user
-  if get_user_by_id(user_id):
-    return
+  try:
+    get_user_by_id(user_id)
+    raise UserException('duplicate user')
+  except UserException:
+    pass
+
   # likewise, secret should be unique.
-  if get_user_by_secret(secret):
-    return
+  try:
+    get_user_by_secret(secret)
+    # TODO(mote): err, do we want to let people know this??
+    raise UserException('duplicate secret')
+  except UserException:
+    pass
+
   u = User(uid=user_id, secret=secret)
   u.put()
 
@@ -69,14 +85,15 @@ def get_series_by_name(name, user=None):
   try:
     return Series.gql('WHERE name =:1', name)[0]
   except IndexError:
-    return None
+    raise NoSuchSeriesException()
 
 
 def get_or_add_series(name, user_id=None, secret=None):
   """Gets a series, or adds it if it doesn't exist."""
   user = get_user(user_id, secret)
-  series = get_series_by_name(user, name)
-  if not series:
+  try:
+    series = get_series_by_name(user, name)
+  except NoSuchSeriesException:
     series = Series(name=name, owner=user)
     series.put()
   return series
@@ -125,6 +142,7 @@ def get_multiple_series_data(names, since):
 
 def add(name, value, user_id='', secret='', timestamp=None):
   series = get_or_add_series(name, user_id, secret)
+  sys.stderr.write('added series: %s\n' % series.name)
   if not series:
     # Bad user?  fail silently.
     return

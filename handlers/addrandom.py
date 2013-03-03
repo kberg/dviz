@@ -8,13 +8,18 @@ import random
 import sys
 import webapp2
 
+from google.appengine.api import users
+
 import data
 
 class AddRandom(webapp2.RequestHandler):
   def get(self):
    self.response.out.write('adding random data.')
    now = datetime.datetime.now()
-   for i in range(20):
+   user = users.get_current_user()
+   user_id = user.user_id()
+   sys.stderr.write('User id: %s\n' % user_id)
+   for i in range(3):
 
      # add a few in last hour, day, week, month, year.
      hour_secs = 60*60
@@ -24,9 +29,12 @@ class AddRandom(webapp2.RequestHandler):
      year_secs = 365*day_secs
 
      for ago in (hour_secs, day_secs, week_secs, month_secs, year_secs):
-       data.add('first',
-           float(random.randint(0, 100)),
-           now - datetime.timedelta(seconds=ago))
-       data.add('second',
-           float(random.randint(0, 100)),
-           now - datetime.timedelta(seconds=ago))
+       timestamp = now - datetime.timedelta(seconds=ago)
+       data.add(name='first',
+           value=float(random.randint(0, 100)),
+           user_id=user_id,
+           timestamp=timestamp)
+       data.add(name='second',
+           value=float(random.randint(0, 100)),
+           user_id=user_id,
+           timestamp=timestamp)
