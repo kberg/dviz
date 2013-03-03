@@ -11,7 +11,7 @@
         <td><input type='checkbox' name='{{ entry.name }}' value='{{ entry.name }}'></td>
         <td>{{ entry.name }}</td>
         <td>
-          <a href='/data/{{ entry.name }}'>data</a>
+          <a href='/raw/{{ entry.name }}'>raw data</a>
           <a href='/graph/{{ entry.name }}'>graph</a>
           <a href='/s/{{ entry.name }}'>about series</a>
         </td>
@@ -44,7 +44,7 @@ handler = function(path) {
 }
 
 gs.onclick = function() { handler('graph'); }
-ds.onclick = function() { handler('data'); }
+ds.onclick = function() { handler('raw'); }
 
 document.getElementById('new').onclick = function() {
   var newName = prompt('Enter new series name', '');

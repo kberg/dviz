@@ -1,168 +1,27 @@
 # NOTE: NO SECURITY. You can add crap like a series name "<script>alert("!")</script>" and have bad things happen.
 #
 
-import datetime
-import os
-import sys
 import webapp2
 
-import data
-
-from google.appengine.ext.webapp import template
-from google.appengine.api import users
-
 from handlers import addrandom
+from handlers import graph
 from handlers import list
+from handlers import mainpage
 from handlers import newseries
-
-class MainPage(webapp2.RequestHandler):
-  def get(self):
-    self.redirect("/list")
-
-class User(webapp2.RequestHandler):
-  def get(self):
-    path = os.path.join(os.path.dirname(__file__), 'templates/user.html')
-    user = users.get_current_user()
-    if user:
-      link = users.create_logout_url(self.request.uri)
-      link_text = 'Logout'
-    else:
-      link = users.create_login_url(self.request.uri)
-      link_text = 'Login'
-
-    if user:
-      user_id = user.user_id()
-    else:
-      user_id = ''
-    template_values = {
-        'link': link,
-        'link_text' : link_text,
-        'users': data.get_all_users(),
-        'user_id' : user_id
-        }
-    self.response.out.write(template.render(path, template_values))
-
-  def post(self):
-    #sys.stderr.write(' '.join(self.request.get_all()))
-    user_id = self.request.get('user_id')
-    secret = self.request.get('secret')
-    data.add_user(user_id, secret)
-
-class Graph(webapp2.RequestHandler):
-  def get(self, names):
-    template_values = {
-      'series': names
-    }
-    # only get first. will need to get them all, later.
-    latest = data.get_latest_value(names.split(',')[0])
-    if latest:
-      template_values['latest_val'] = latest.value
-      template_values['latest_ts'] = latest.timestamp
-    else:
-      template_values['latest_val'] = 'NaN'
-      template_values['latest_ts'] = 'NaN'
-
-
-    path = os.path.join(os.path.dirname(__file__), 'templates/graph.html')
-    self.response.out.write(template.render(path, template_values))
-
-
-def get_time_ago(timerange):
-  if timerange == 'hour':
-    hours_ago = 1
-  if timerange == 'day':
-    hours_ago = 24
-  if timerange == 'week':
-    hours_ago = 24*7
-  if timerange == 'month':
-    hours_ago = 24*30
-  if timerange == 'year':
-    hours_ago = 24*365
-  return datetime.datetime.now() - datetime.timedelta(hours=hours_ago)
-
-
-class Data(webapp2.RequestHandler):
-  def get(self, timerange, names):
-    # Convert timerange an exact date.
-    since = get_time_ago(timerange)
-    names = names.split(',')
-    text = ''
-    if len(names) == 0:
-      text = ''
-    elif len(names) == 1:
-      self.response.out.write('Date,%s\n' % names[0])
-      points = list(data.get_series_data(names[0], since))
-      for point in points:
-        self.response.out.write('%s,%f\n' % (
-            point.timestamp.strftime('%Y/%m/%d %H:%M:%S'),
-            point.value))
-    else:
-      self.response.out.write('Date,%s\n' % ','.join(names))
-      points = list(data.get_multiple_series_data(names, since))
-
-      cur_points = {}
-      last_timestamp = None
-      for i in range(len(points)):
-        point = points[i]
-        if last_timestamp and last_timestamp != point.timestamp:
-          values = ['%s' % cur_points.get(n, 'None') for n in names]
-          self.response.out.write('%s,%s\n' % (
-            last_timestamp.strftime('%Y/%m/%d %H:%M:%S'),
-            ','.join(values)))
-          cur_points = {point.series.name : point.value}
-          last_timestamp = point.timestamp
-        else:
-          if not last_timestamp:
-            last_timestamp = point.timestamp
-          cur_points[point.series.name] = point.value
-      if last_timestamp:
-        values = ['%s' % cur_points.get(n, 'None') for n in names]
-        self.response.out.write('%s,%s\n' % (
-          last_timestamp.strftime('%Y/%m/%d %H:%M:%S'),
-          ','.join(values)))
-
-class Push(webapp2.RequestHandler):
-  def get(self):
-    self.post()
-
-  def post(self):
-    # TODO: need to authenticate w/ User secret.
-    name = self.request.get('name')
-    secret = self.request.get('secret')
-    series = self.request.get('series')
-    value = float(self.request.get('value'))
-    timestamp = self.request.get('timestamp')
-    timems = self.request.get('timems')
-    if not timestamp or timestamp == 'None' or timestamp == '':
-      if timems and timems != '':
-        timeSeconds = float(timems) / 1000
-        timestamp = datetime.datetime.utcfromtimestamp(timeSeconds)
-      else:
-        timestamp = datetime.datetime.now()
-    else:
-      # kberg asks: IS THIS RIGHT?
-      timestamp = datetime.strptime('%Y/%m/%d %H:%M:%S')
-    data.add(series, value, timestamp)
-    self.response.out.write('Added: %s, %s, %s\n' % (
-      series, value, timestamp))
-
-class Series(webapp2.RequestHandler):
-  def get(self, name):
-    template_values = {
-      'name' : name
-    }
-    path = os.path.join(os.path.dirname(__file__), 'templates/series.html')
-    self.response.out.write(template.render(path, template_values))
+from handlers import push
+from handlers import raw
+from handlers import series
+from handlers import user
 
 app = webapp2.WSGIApplication([
-  ('/', MainPage),
-  ('/user', User),
-  ('/data', Data),
-  ('/data/(.+)/(.+)', Data),
+  ('/', mainpage.MainPage),
+  ('/user', user.User),
+  ('/raw', raw.RawData),
+  ('/raw/(.+)/(.+)', raw.RawData),
   ('/list', list.List),
-  ('/push', Push),
+  ('/push', push.Push),
   ('/newseries', newseries.NewSeries),
   ('/random', addrandom.AddRandom),  # for testing only.
-  ('/graph/(.+)', Graph),
-  ('/s/(.+)', Series)
+  ('/graph/(.+)', graph.Graph),
+  ('/s/(.+)', series.Series)
   ])
