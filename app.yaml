@@ -10,3 +10,4 @@ handlers:
 
 - url: /.*
   script: dviz.app
+  login: required

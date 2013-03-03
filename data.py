@@ -72,8 +72,9 @@ def get_series_by_name(name, user=None):
     return None
 
 
-def get_or_add_series(user, name):
+def get_or_add_series(name, user_id=None, secret=None):
   """Gets a series, or adds it if it doesn't exist."""
+  user = get_user(user_id, secret)
   series = get_series_by_name(user, name)
   if not series:
     series = Series(name=name, owner=user)
@@ -123,8 +124,7 @@ def get_multiple_series_data(names, since):
 
 
 def add(name, value, user_id='', secret='', timestamp=None):
-  user = get_user(user_id, secret_)
-  series = get_or_add_series(user, name)
+  series = get_or_add_series(name, user_id, secret)
   if not series:
     # Bad user?  fail silently.
     return
