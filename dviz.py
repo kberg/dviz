@@ -180,9 +180,12 @@ class AddRandom(webapp2.RequestHandler):
 
 class NewSeries(webapp2.RequestHandler):
   def get(self):
+    user = users.get_current_user()
+    user_id = user.user_id()
+
     name = self.request.get('name')
     # TODO(konigsberg): Validate/sanitize name
-    data.get_or_add_series(name)
+    data.get_or_add_series(name, user_id=user_id)
     # TODO: redirect to /s/name
     self.response.out.write("<a href='/s/%s'>Created, go to it</a>" % name)
 
