@@ -92,7 +92,7 @@ def get_or_add_series(name, user_id=None, secret=None):
   """Gets a series, or adds it if it doesn't exist."""
   user = get_user(user_id, secret)
   try:
-    series = get_series_by_name(user, name)
+    series = get_series_by_name(name=name, user=user)
   except NoSuchSeriesException:
     series = Series(name=name, owner=user)
     series.put()
