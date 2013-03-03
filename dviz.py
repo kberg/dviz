@@ -13,6 +13,7 @@ from google.appengine.api import users
 
 from handlers import addrandom
 from handlers import list
+from handlers import newseries
 
 class MainPage(webapp2.RequestHandler):
   def get(self):
@@ -145,17 +146,6 @@ class Push(webapp2.RequestHandler):
     self.response.out.write('Added: %s, %s, %s\n' % (
       series, value, timestamp))
 
-class NewSeries(webapp2.RequestHandler):
-  def get(self):
-    user = users.get_current_user()
-    user_id = user.user_id()
-
-    name = self.request.get('name')
-    # TODO(konigsberg): Validate/sanitize name
-    data.get_or_add_series(name, user_id=user_id)
-    # TODO: redirect to /s/name
-    self.response.out.write("<a href='/s/%s'>Created, go to it</a>" % name)
-
 class Series(webapp2.RequestHandler):
   def get(self, name):
     template_values = {
@@ -171,7 +161,7 @@ app = webapp2.WSGIApplication([
   ('/data/(.+)/(.+)', Data),
   ('/list', list.List),
   ('/push', Push),
-  ('/newseries', NewSeries),
+  ('/newseries', newseries.NewSeries),
   ('/random', addrandom.AddRandom),  # for testing only.
   ('/graph/(.+)', Graph),
   ('/s/(.+)', Series)
