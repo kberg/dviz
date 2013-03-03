@@ -12,6 +12,7 @@ from google.appengine.ext.webapp import template
 from google.appengine.api import users
 
 from handlers import addrandom
+from handlers import list
 
 class MainPage(webapp2.RequestHandler):
   def get(self):
@@ -144,15 +145,6 @@ class Push(webapp2.RequestHandler):
     self.response.out.write('Added: %s, %s, %s\n' % (
       series, value, timestamp))
 
-class List(webapp2.RequestHandler):
-  def get(self):
-    template_values = {
-      'entries': data.get_all_series(),
-    }
-
-    path = os.path.join(os.path.dirname(__file__), 'templates/list.html')
-    self.response.out.write(template.render(path, template_values))
-
 class NewSeries(webapp2.RequestHandler):
   def get(self):
     user = users.get_current_user()
@@ -177,7 +169,7 @@ app = webapp2.WSGIApplication([
   ('/user', User),
   ('/data', Data),
   ('/data/(.+)/(.+)', Data),
-  ('/list', List),
+  ('/list', list.List),
   ('/push', Push),
   ('/newseries', NewSeries),
   ('/random', addrandom.AddRandom),  # for testing only.
