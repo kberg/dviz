@@ -1,39 +1,39 @@
-<!DOCTYPE html>
-<html>
-  <head>
-  </head>
-  <body>
-    {% include "header.html" %}
-    <h2>About series {{ name }}</h2>
-    <h3>Add a point</h3>
-    <table>
-      <tr><td>Time (ms)</td><td><input type='text' id='time'/> (<span id='timestr'></span>)</td></tr>
-      <tr><td>Value</td><td><input type='text' id='value'/></td></tr>
-      <tr><td>&nbsp;</td><td><button id='commit'/>Save</button></td></tr>
-    </table>
+{% extends "base.html" %}
+{% block title %}Series
+{% endblock %}
 
-    <script type="text/javascript">
-      t = document.getElementById('time');
-      timestr = document.getElementById('timestr');
-      v = document.getElementById('value');
-      s = document.getElementById('commit');
+{% block content %}
 
-      // Arghgrh why is this one char behind?
-      var f = function() {
-        timestr.innerText = new Date(parseInt(t.value));
-      }
-      t.onkeydown = f;
-      t.onkeypress = f;
-      t.onchange = f;
+<h2>About series {{ name }}</h2>
+<h3>Add a point</h3>
+<table>
+  <tr><td>Time (ms)</td><td><input type='text' id='time'/> (<span id='timestr'></span>)</td></tr>
+  <tr><td>Value</td><td><input type='text' id='value'/></td></tr>
+  <tr><td>&nbsp;</td><td><button id='commit'/>Save</button></td></tr>
+</table>
 
-      t.value = new Date().getTime();
-      f();
+<script type="text/javascript">
+  t = document.getElementById('time');
+  timestr = document.getElementById('timestr');
+  v = document.getElementById('value');
+  s = document.getElementById('commit');
 
-      s.onclick = function() {
-        url="/push?series={{ name }}&timems=" + t.value + "&value=" + v.value;
-        if (console) { console.log("pushing " , url); }
-        window.location.href=url;
-      }
-    </script>
-  </body>
-</html>
+  // Arghgrh why is this one char behind?
+  var f = function() {
+    timestr.innerText = new Date(parseInt(t.value));
+  }
+  t.onkeydown = f;
+  t.onkeypress = f;
+  t.onchange = f;
+
+  t.value = new Date().getTime();
+  f();
+
+  s.onclick = function() {
+    url="/push?series={{ name }}&timems=" + t.value + "&value=" + v.value;
+    if (console) { console.log("pushing " , url); }
+    window.location.href=url;
+  }
+</script>
+
+{% endblock %}
