@@ -17,7 +17,7 @@ class PermissionException(Exception):
 class User(db.Model):
   uid = db.StringProperty()      # username
   secret = db.StringProperty()   # secret key for POSTing.
-                                 # TODO: salt.
+                                 # TODO: salt and hash.
   email = db.StringProperty()                                 
 
 
