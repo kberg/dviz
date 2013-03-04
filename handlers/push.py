@@ -16,9 +16,13 @@ class Push(webapp2.RequestHandler):
     self.post()
 
   def post(self):
-    # TODO: need to authenticate w/ User secret.
-    name = self.request.get('name')
     secret = self.request.get('secret')
+    try:
+      user = users.get_current_user()
+      user_id = user.user_id()
+    except:
+      user_id = None
+
     series = self.request.get('series')
     value = float(self.request.get('value'))
     timestamp = self.request.get('timestamp')
@@ -32,6 +36,7 @@ class Push(webapp2.RequestHandler):
     else:
       # kberg asks: IS THIS RIGHT?
       timestamp = datetime.strptime('%Y/%m/%d %H:%M:%S')
-    data.add(series, value, timestamp)
+    data.add(name=series, value=value, timestamp=timestamp, user_id=user_id,
+        secret=secret)
     self.response.out.write('Added: %s, %s, %s\n' % (
       series, value, timestamp))
