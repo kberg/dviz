@@ -5,11 +5,14 @@
   <body>
     {% include "../header.html" %}
     <h2>List of users</h2>
-    <table id='table'>
+    <table id='table' border='1'>
     <tdata>
+    <tr>
+    <td>Userid</td><td>email</td><td>secret</td><td>actions</td>
+    </tr>
     {% for user in users %}
       <tr>
-        <td>{{ entry.name }} {{ entry.email }}</td>
+        <td>{{ user.uid }}</td><td>{{ user.email }}</td><td>{{ user.secret }}</td><td><a href="#">delete</a></td>
       </tr>
     {% endfor %}
     </tdata>

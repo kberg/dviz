@@ -18,6 +18,7 @@ class User(db.Model):
   uid = db.StringProperty()      # username
   secret = db.StringProperty()   # secret key for POSTing.
                                  # TODO: salt and hash.
+  email = db.StringProperty()                                 
 
 
 class Series(db.Model):
@@ -57,7 +58,12 @@ def get_user_by_secret(secret):
     raise UserException('No such user')
 
 
-def add_user(user_id, secret):
+def add_user(user_id, email_address, secret):
+  sys.stderr.write("add user")
+  sys.stderr.write(user_id)
+  sys.stderr.write(email_address)
+  sys.stderr.write(secret)
+
   try:
     get_user_by_id(user_id)
     raise UserException('duplicate user')
@@ -72,7 +78,7 @@ def add_user(user_id, secret):
   except UserException:
     pass
 
-  u = User(uid=user_id, secret=secret)
+  u = User(uid=user_id, email=email_address, secret=secret)
   u.put()
 
 

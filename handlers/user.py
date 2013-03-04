@@ -35,8 +35,9 @@ class User(webapp2.RequestHandler):
         }
     self.response.out.write(template.render(path, template_values))
 
+  #TODO(kberg): This should really be another URL Path.
   def post(self):
-    #sys.stderr.write(' '.join(self.request.get_all()))
-    user_id = self.request.get('user_id')
-    secret = self.request.get('secret')
-    data.add_user(user_id, secret)
+    user = users.get_current_user()
+    if user:
+	    secret = self.request.get('secret')
+	    data.add_user(user.user_id(), user.email(), secret)
