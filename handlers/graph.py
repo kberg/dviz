@@ -14,6 +14,7 @@ from google.appengine.api import users
 class Graph(webapp2.RequestHandler):
   def get(self, names):
     template_values = {
+      'user': users.get_current_user(),
       'series': names
     }
     # only get first. will need to get them all, later.

@@ -29,6 +29,7 @@ class User(webapp2.RequestHandler):
     template_values = {
         'link': link,
         'link_text' : link_text,
+        'user': users.get_current_user(),
         'users': data.get_all_users(),
         'user_id' : user_id
         }

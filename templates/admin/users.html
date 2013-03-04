@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  </head>
+  <body>
+    {% include "../header.html" %}
+    <h2>List of users</h2>
+    <table id='table'>
+    <tdata>
+    {% for user in users %}
+      <tr>
+        <td>{{ entry.name }} {{ entry.email }}</td>
+      </tr>
+    {% endfor %}
+    </tdata>
+    </table>
+  </body>
+</html>

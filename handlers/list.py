@@ -18,6 +18,7 @@ from handlers import addrandom
 class List(webapp2.RequestHandler):
   def get(self):
     template_values = {
+      'user': users.get_current_user(),
       'entries': data.get_all_series(),
     }
 

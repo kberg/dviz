@@ -14,6 +14,7 @@ from google.appengine.api import users
 class Series(webapp2.RequestHandler):
   def get(self, name):
     template_values = {
+      'user': users.get_current_user(),
       'name' : name
     }
     path = os.path.join(os.path.dirname(__file__), '../templates/series.html')
