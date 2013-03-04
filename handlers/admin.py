@@ -20,7 +20,7 @@ class Admin(webapp2.RequestHandler):
       'entries': data.get_all_series(),
     }
 
-    path = os.path.join(os.path.dirname(__file__), '../templates/admin/admin.html')
+    path = os.path.join(os.path.dirname(__file__), '../templates/admin.html')
     self.response.out.write(template.render(path, template_values))
 
 class Users(webapp2.RequestHandler):
@@ -29,7 +29,7 @@ class Users(webapp2.RequestHandler):
       'users': data.get_all_users(),
     }
 
-    path = os.path.join(os.path.dirname(__file__), '../templates/admin/users.html')
+    path = os.path.join(os.path.dirname(__file__), '../templates/admin_users.html')
     self.response.out.write(template.render(path, template_values))
 
 class User(webapp2.RequestHandler):
