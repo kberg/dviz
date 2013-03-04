@@ -1,17 +1,13 @@
 # NOTE: NO SECURITY. You can add crap like a series name "<script>alert("!")</script>" and have bad things happen.
 #
 
-import datetime
-import os
-import sys
-import webapp2
-
 import data
 
-from google.appengine.ext.webapp import template
+from handlers import base
+
 from google.appengine.api import users
 
-class NewSeries(webapp2.RequestHandler):
+class NewSeries(base.Base):
   def get(self):
     user = users.get_current_user()
     user_id = user.user_id()

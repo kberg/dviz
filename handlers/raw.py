@@ -2,17 +2,12 @@
 #
 
 import datetime
-import os
-import sys
-import webapp2
 
 import data
 
-from google.appengine.ext.webapp import template
-from google.appengine.api import users
+from handlers import base
 
-
-class RawData(webapp2.RequestHandler):
+class RawData(base.Base):
   def get(self, timerange, names):
     # Convert timerange an exact date.
     since = self.get_time_ago(timerange)
