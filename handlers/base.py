@@ -23,12 +23,15 @@ class Base(webapp2.RequestHandler):
     path = os.path.join(os.path.dirname(__file__), '../templates/%s' % name)
     navbar = { }
     user = users.get_current_user()
-    navbar["email"] = user.email()
-    if (user.email):
-      navbar["logout_url"] = users.create_logout_url("/")
+    if user:
+      navbar['email'] = user.email()
     else:
-      navbar["login_url"] = users.create_login_url("/")
+      navbar['email'] = ''
+    if (user and user.email):
+      navbar['logout_url'] = users.create_logout_url('/')
+    else:
+      navbar['login_url'] = users.create_login_url('/')
 
-    template_values["navbar"] = navbar
+    template_values['navbar'] = navbar
     self.response.out.write(template.render(path, template_values))
 
