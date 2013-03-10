@@ -2,16 +2,13 @@
 #
 
 import datetime
-import os
-import sys
-import webapp2
-
 import data
 
-from google.appengine.ext.webapp import template
 from google.appengine.api import users
 
-class Push(webapp2.RequestHandler):
+from handlers import base
+
+class Push(base.Base):
   def get(self):
     self.post()
 

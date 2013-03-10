@@ -2,18 +2,15 @@
 #
 
 import datetime
-import os
-import sys
-import webapp2
 
 import data
 
-from google.appengine.ext.webapp import template
 from google.appengine.api import users
 
-class User(webapp2.RequestHandler):
+from handlers import base
+
+class User(base.Base):
   def get(self):
-    path = os.path.join(os.path.dirname(__file__), '../templates/user.html')
     user = users.get_current_user()
     if user:
       link = users.create_logout_url(self.request.uri)
@@ -33,7 +30,7 @@ class User(webapp2.RequestHandler):
         'users': data.get_all_users(),
         'user_id' : user_id
         }
-    self.response.out.write(template.render(path, template_values))
+    self.render('user.html', template_values)
 
   #TODO(kberg): This should really be another URL Path.
   def post(self):
