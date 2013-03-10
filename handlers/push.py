@@ -13,7 +13,7 @@ class Push(base.Base):
     self.post()
 
   def post(self):
-    secret = self.request.get('secret')
+    user_secret = self.request.get('user_secret')
     try:
       user = users.get_current_user()
       user_id = user.user_id()
@@ -34,6 +34,6 @@ class Push(base.Base):
       # kberg asks: IS THIS RIGHT?
       timestamp = datetime.strptime('%Y/%m/%d %H:%M:%S')
     data.add(name=series, value=value, timestamp=timestamp, user_id=user_id,
-        secret=secret)
+        secret=user_secret)
     self.response.out.write('Added: %s, %s, %s\n' % (
       series, value, timestamp))

@@ -147,10 +147,8 @@ def get_multiple_series_data(names, since):
 
 
 def add(name, value, user_id='', secret='', timestamp=None):
-  series = get_or_add_series(name, user_id, secret)
-  sys.stderr.write('added series: %s\n' % series.name)
+  series = get_or_add_series(name, user_id=user_id, secret=secret)
   if not series:
-    # Bad user?  fail silently.
     return
   d = SeriesData(series=series, value=value)
   if not timestamp:

@@ -48,6 +48,8 @@ class RawData(base.Base):
           ','.join(values)))
 
   def get_time_ago(self, timerange):
+    if timerange == 'all':
+      return datetime.datetime(1970, 01, 01)
     hours_ago = 0
     if timerange == 'hour':
       hours_ago = 1
