@@ -13,3 +13,21 @@
 	float: left;
   padding: 20px 20px 5px 5px;
 }
+
+.logo {
+  font-family: Arial, sans-serif;
+}
+
+.logo .d {
+  font-size: 18px;
+  color: blue;
+}
+
+.logo .viz {
+  font-weight: bold;
+  font-size: 12px;
+  color: green;
+  position: relative;
+  top: -6px;
+}
+

@@ -5,15 +5,23 @@
 {% block content %}
 <h2>List of users</h2>
 <table id='table' border='1'>
-<tdata>
-<tr>
-<td>Userid</td><td>email</td><td>secret</td><td>actions</td>
-</tr>
-{% for user in users %}
+  <tdata>
   <tr>
-    <td>{{ user.uid }}</td><td>{{ user.email }}</td><td>{{ user.secret }}</td><td><a href="#">delete</a></td>
+    <td>Userid</td>
+    <td>email</td>
+    <td>nickname</td>
+    <td>secret</td>
+    <td>actions</td>
   </tr>
-{% endfor %}
-</tdata>
+  {% for user in users %}
+  <tr>
+    <td>{{ user.uid }}</td>
+    <td>{{ user.email }}</td>
+    <td>{{ user.nickname }}</td>
+    <td>{{ user.secret }}</td>
+    <td><a href="#">delete</a></td>
+  </tr>
+  {% endfor %}
+  </tdata>
 </table>
 {% endblock %}
