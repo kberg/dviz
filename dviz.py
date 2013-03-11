@@ -17,6 +17,7 @@ from handlers import user
 app = webapp2.WSGIApplication([
   ('/', mainpage.MainPage),
   ('/user', user.User),
+  ('/save-user', user.SaveUser),
   ('/raw/(.+)/(.+)', raw.RawData),
   ('/raw', raw.RawData),
   ('/list', list.List),

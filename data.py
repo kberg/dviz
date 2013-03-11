@@ -19,6 +19,7 @@ class User(db.Model):
   secret = db.StringProperty()   # secret key for POSTing.
                                  # TODO: salt and hash.
   email = db.StringProperty()                                 
+  nickname = db.StringProperty()
 
 
 class Series(db.Model):
@@ -57,28 +58,28 @@ def get_user_by_secret(secret):
   except IndexError:
     raise UserException('No such user')
 
+def update_user(user_id, secret, nickname):
+  u = get_user_by_id(user_id)
+  u2 = User(uid=user_id, email=u.email, secret=secret, nickname=nickname)
+  u.put() # Does this update?
 
-def add_user(user_id, email_address, secret):
-  sys.stderr.write("add user")
-  sys.stderr.write(user_id)
-  sys.stderr.write(email_address)
-  sys.stderr.write(secret)
-
+def add_user(user_id, email_address, secret, nickname):
   try:
     get_user_by_id(user_id)
     raise UserException('duplicate user')
-  except UserException:
+  except UserException as e:
     pass
 
   # likewise, secret should be unique.
   try:
     get_user_by_secret(secret)
     # TODO(mote): err, do we want to let people know this??
+    # RK says We should generate the secret.
     raise UserException('duplicate secret')
-  except UserException:
+  except UserException as e:
     pass
 
-  u = User(uid=user_id, email=email_address, secret=secret)
+  u = User(uid=user_id, email=email_address, secret=secret, nickname=nickname)
   u.put()
 
 

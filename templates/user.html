@@ -3,21 +3,38 @@
 {% endblock %}
 
 {% block content %}
-<p>
-  <a href="{{ link }}">{{ link_text }}</a>
-</p>
-<h2>What is your secret?</h2>
-<form action = '/user' method="post">
-<input type='hidden' name='user_id' value='{{ user_id }}'/>
-<input type='text' name='secret' id='secret' />
-<button id='commit'/>Save</button>
-</form>
+<div class='user-form'>
+<form action = '/save-user' method="post">
+  <input type='hidden' name='user_id' value='{{ user_id }}'/>
 
-<h2>Users</h2>
-<ul>
-  {% for user in users %}
-  <li> {{ user.uid }} -- {{ user.secret }} </li>
-  {% endfor %}
-</ul>
+  <table>
+  <tr>
+  <td>Email address:</td>
+  <td>{{ user.email }}</td>
+  </tr>
+
+  <tr>
+  <td>Userid:</td>
+  <td>{{ user.uid }}</td>
+  </tr>
+
+  <tr>
+  <td>Nickname:</td>
+  <td>
+    <input type='text' name='nickname' id='nickname' value='{{ nickname }}' />
+  </td>
+  </tr>
+
+  <tr>
+  <td>Secret Key:</td>
+  <td>
+    <input type='text' name='secret' id='secret' value='{{secret}}' />
+  </td>
+  </tr>
+
+  </table>
+  <button id='commit'/>Save</button>
+</form>
+</div>
 
 {% endblock %}
